@@ -9,3 +9,5 @@ Local checker for CVE-2023-20032 and CVE-2023-20052
 * https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-clamav-q8DThCy
 
 * https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-clamav-xxe-TcSZduhN
+
+https://community.rsa.com/t5/securid-product-advisories/rsa-customer-advisory-clamav-vulnerability-cve-2023-20032/ta-p/696366
