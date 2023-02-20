@@ -1,3 +1,6 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Author: cbk914
 import os
 import re
 import subprocess
@@ -26,6 +29,12 @@ match = re.search(b'ClamAV ([0-9.]+)', clamscan_output)
 if match:
     version = match.group(1).decode()
     if is_vulnerable_version(version):
-        print(f"ClamAV version {version} is vulnerable to CVE-2023-20032 and CVE-2023-20052!")
+        print(f"ClamAV version {version} is vulnerable to CVE-2023-20032 and CVE-2023-20052. Please upgrade ClamAV to a non-vulnerable version.")
+        print("Upgrade instructions:")
+        print("- For Debian/Ubuntu: https://www.clamav.net/documents/installing-clamav-on-debian-and-ubuntu-linux-distributions")
+        print("- For Red Hat/CentOS: https://www.clamav.net/documents/installing-clamav-on-redhat-and-centos-linux-distributions")
+        print("- For other Linux distributions: https://www.clamav.net/documents/installing-clamav-on-linux")
+    else:
+        print(f"ClamAV version {version} is not vulnerable to CVE-2023-20032 and CVE-2023-20052.")
 else:
     print("ClamAV is not installed on this system")
