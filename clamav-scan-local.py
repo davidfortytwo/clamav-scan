@@ -40,6 +40,10 @@ parser.add_argument("-d", "--clamav-dir", help="ClamAV installation directory", 
 parser.add_argument("directory", help="Directory to scan")
 args = parser.parse_args()
 
+# If the clamav-dir argument is not specified, use the default installation directory
+if not args.clamav_dir:
+    args.clamav_dir = "/usr/local/clamav"
+
 # Set the clamscan binary path based on the specified ClamAV installation directory
 clamscan_path = os.path.join(args.clamav_dir, "bin", "clamscan")
 
