@@ -1,53 +1,31 @@
-#! /usr/bin/env python3
-# -*- coding: utf-8 -*-
-# Author: cbk914
 import os
 import re
 import subprocess
-import argparse
 
 def is_vulnerable_version(version):
     vulnerable_versions = ["1.0.0", "0.105.1", "0.103.7"]
-    return version in vulnerable_versions
+    for v in vulnerable_versions:
+        if version.startswith(v):
+            return True
+    return False
 
-def check_file_for_vulnerability(clamscan_path, filename):
-    with open(filename, 'rb') as f:
-        # Read the file contents
-        contents = f.read()
+# Find the location of the clamscan binary
+try:
+    clamscan_path = subprocess.check_output(['which', 'clamscan']).strip()
+    clamscan_path = clamscan_path.decode()
+except subprocess.CalledProcessError:
+    print("ClamAV is not installed on this system")
+    exit()
 
-        # Check for the vulnerable condition
-        if b"HFS+" in contents and b"ClamAV" in contents:
-            # CVE-2023-20032: check if the vulnerable version is present
-            clamscan_output = subprocess.check_output([clamscan_path, '--version'])
-            match = re.search(b'ClamAV ([0-9.]+)', clamscan_output)
-            if match:
-                version = match.group(1).decode()
-                if is_vulnerable_version(version):
-                    print(f"File {filename} is vulnerable to CVE-2023-20032!")
+# Extract the directory path from the clamscan binary path
+clamav_dir = os.path.dirname(os.path.dirname(clamscan_path))
 
-        if b"DMG" in contents and b"ClamAV" in contents:
-            # CVE-2023-20052: check if the vulnerable version is present
-            clamscan_output = subprocess.check_output([clamscan_path, '--version'])
-            match = re.search(b'ClamAV ([0-9.]+)', clamscan_output)
-            if match:
-                version = match.group(1).decode()
-                if is_vulnerable_version(version):
-                    print(f"File {filename} is vulnerable to CVE-2023-20052!")
-
-# Parse command line arguments
-parser = argparse.ArgumentParser()
-parser.add_argument("-d", "--clamav-dir", help="ClamAV installation directory", default="/usr/local/clamav")
-parser.add_argument("directory", help="Directory to scan")
-args = parser.parse_args()
-
-# If the clamav-dir argument is not specified, use the default installation directory
-if not args.clamav_dir:
-    args.clamav_dir = "/usr/local/clamav"
-
-# Set the clamscan binary path based on the specified ClamAV installation directory
-clamscan_path = os.path.join(args.clamav_dir, "bin", "clamscan")
-
-# Scan the specified directory for files
-for filename in os.listdir(args.directory):
-    if os.path.isfile(os.path.join(args.directory, filename)):
-        check_file_for_vulnerability(clamscan_path, os.path.join(args.directory, filename))
+# Check the version of ClamAV installed on the system
+clamscan_output = subprocess.check_output([clamscan_path, '--version'])
+match = re.search(b'ClamAV ([0-9.]+)', clamscan_output)
+if match:
+    version = match.group(1).decode()
+    if is_vulnerable_version(version):
+        print(f"ClamAV version {version} is vulnerable to CVE-2023-20032 and CVE-2023-20052!")
+else:
+    print("ClamAV is not installed on this system")
